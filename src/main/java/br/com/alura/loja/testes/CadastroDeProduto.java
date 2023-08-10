@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 
 import javax.persistence.EntityManager;
 
-import br.com.alura.loja.dao.CategoriaDAO;
-import br.com.alura.loja.dao.ProdutoDAO;
 import br.com.alura.loja.modelo.Categoria;
 import br.com.alura.loja.modelo.Produto;
 import br.com.alura.loja.utils.JPAUtil;
@@ -17,16 +15,19 @@ public class CadastroDeProduto {
 		Produto celular = new Produto("Xiaomi Redmi", "Muito bom", new BigDecimal("800"), celulares );
 		
 		EntityManager em = JPAUtil.getEntityManager();
-		ProdutoDAO produtoDao = new ProdutoDAO(em);
-		CategoriaDAO categoriaDao = new CategoriaDAO(em);
-		
 		em.getTransaction().begin();
 		
-		categoriaDao.cadastrar(celulares);
-		produtoDao.cadastrar(celular);
+		em.persist(celulares);
+		celulares.setNome("XPTO");
 		
-		em.getTransaction().commit();
-		em.close();
+		em.flush();
+		em.clear();
+		
+		celulares = em.merge(celulares);
+		celulares.setNome("1234");
+		em.flush();
+		em.remove(celulares);
+		em.flush();
 	}
 	
 }
